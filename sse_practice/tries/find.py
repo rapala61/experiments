@@ -31,6 +31,29 @@ What this script is (IMO):
     - Missing more comments
     - Fun
 
+How to use:
+
+    rpacas@Rafaels-MBP$ python find.py
+    length longest word = 25
+    total unique words = 8799
+    Type 'exit' to quit.
+
+Partial Match:
+
+    Type a word (or part of it) to see if it's contained in the text:  hi
+    We found a partial match: hi! Did you mean highly?
+
+Match:
+
+    Type a word (or part of it) to see if it's contained in the text:  the
+    the is in the text! It is used 13,036 times
+
+No Match:
+
+    Type a word (or part of it) to see if it's contained in the text:  12
+    We did not find a match, sorry!
+
+
 """
 
 
@@ -158,7 +181,8 @@ trie = Trie(Node())
 words = set()
 longest_word = 0
 
-with open("/Users/rpacas/Desktop/repos/experiments/sse_practice/tries/text.txt") as lines:
+# TODO: Use better path logic???
+with open("./text.txt") as lines:
 
     for line in lines:
         no_spaces = line.strip().rstrip()
