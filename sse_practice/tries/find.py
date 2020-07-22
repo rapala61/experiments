@@ -9,7 +9,8 @@ from termcolor import colored, cprint
 Trie
 
 This is an experimental script meant to practice the use of the Trie
-data structure.
+data structure. Some good reading about it,
+here: https://medium.com/basecs/trying-to-understand-tries-3ec6bede0014
 
 It works by ingesting all the words inside the included text.txt file.
 Outputs some interesting metadata about the file. It let's the user
@@ -38,21 +39,23 @@ How to use:
     total unique words = 8799
     Type 'exit' to quit.
 
-Partial Match:
+    Partial Match:
 
-    Type a word (or part of it) to see if it's contained in the text:  hi
-    We found a partial match: hi! Did you mean highly?
+        Type a word (or part of it) to see if it's contained in the text:  hi
+        We found a partial match: hi! Did you mean highly?
 
-Match:
+    Match:
 
-    Type a word (or part of it) to see if it's contained in the text:  the
-    the is in the text! It is used 13,036 times
+        Type a word (or part of it) to see if it's contained in the text:  the
+        the is in the text! It is used 13,036 times
 
-No Match:
+    No Match:
 
-    Type a word (or part of it) to see if it's contained in the text:  12
-    We did not find a match, sorry!
+        Type a word (or part of it) to see if it's contained in the text:  12
+        We did not find a match, sorry!
 
+Misc:
+    Used Python 3.8.3
 
 """
 
