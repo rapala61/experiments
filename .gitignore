@@ -1,0 +1,8 @@
+forbidden_knowledge.txt
+
+# MacOS BS
+.DS_Store
+
+# vscode stuff
+.vscode
+launch.json
