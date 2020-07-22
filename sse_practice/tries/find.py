@@ -1,3 +1,12 @@
+"""Find words using a Trie data structure
+
+This is an experimental script meant to practice the use of the Trie
+data structure. It works by ingesting all the words inside the included text.txt file.
+It let's the user get a match (with some metadata about the word) or
+a partial match with suggestions.
+
+"""
+
 import os
 import re
 import string
@@ -6,61 +15,6 @@ import helpers.util
 
 from functools import reduce
 from termcolor import colored, cprint
-
-"""
-Trie
-
-This is an experimental script meant to practice the use of the Trie
-data structure. Some good reading about it,
-here: https://medium.com/basecs/trying-to-understand-tries-3ec6bede0014
-
-It works by ingesting all the words inside the included text.txt file.
-Outputs some interesting metadata about the file. It let's the user
-type a word and find out if:
-    - It's used in the text
-    - How many times it's used
-    - If a partial match is found. Suggests an existing word based on it.
-
-What this script is not:
-    - A good example of the "best" implementation of the data structure
-    - Modular or reusable, in fact, there is plenty of non DRY code, I know
-    - Efficient or inefficient on purpose. No Time and Space complexity analysis
-      has been run against this script.
-
-What this script is (IMO):
-    - A good first step into practicing how to implement a solution
-      using Tries as a data structure.
-    - First iteration after pseudocode
-    - Missing more comments
-    - Fun
-
-How to use:
-
-    rpacas@Rafaels-MBP$ python find.py
-    length longest word = 25
-    total unique words = 8799
-    Type 'exit' to quit.
-
-    Partial Match:
-
-        Type a word (or part of it) to see if it's contained in the text:  hi
-        We found a partial match: hi! Did you mean highly?
-
-    Match:
-
-        Type a word (or part of it) to see if it's contained in the text:  the
-        the is in the text! It is used 13,036 times
-
-    No Match:
-
-        Type a word (or part of it) to see if it's contained in the text:  12
-        We did not find a match, sorry!
-
-Misc:
-    Used Python 3.8.3
-
-"""
-
 
 class Node:
 
