@@ -3,8 +3,9 @@
 This is an experimental script meant to practice the use of the Trie
 data structure. [This](https://medium.com/basecs/trying-to-understand-tries-3ec6bede0014) post is a good read about it.
 
-What this script is **not**:
+# Disclaimer
 
+What this script is **not**:
 - A good example of the "best" implementation of the data structure.
 - Modular or reusable, in fact, there is plenty of non DRY code, I know.
 - Efficient or inefficient on purpose. No Time and Space complexity analysis has been run against this script.
