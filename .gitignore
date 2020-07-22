@@ -7,4 +7,5 @@ __pycache__
 .DS_Store
 
 # vscode stuff
+.vscode
 launch.json
