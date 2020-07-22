@@ -1,0 +1,6 @@
+{
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true,
+    // https://github.com/microsoft/python-language-server/issues/887#issuecomment-640763300
+    "python.pythonPath": "."
+}

@@ -1,8 +1,10 @@
 forbidden_knowledge.txt
 
+# Bytecode
+__pycache__
+
 # MacOS BS
 .DS_Store
 
 # vscode stuff
-.vscode
 launch.json
