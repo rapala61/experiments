@@ -1,7 +1,9 @@
+import os
 import re
 import string
 import random
-from pathlib import Path
+import helpers.util
+
 from functools import reduce
 from termcolor import colored, cprint
 
@@ -111,11 +113,10 @@ class Trie:
         nodes = []
         search_suggestions = False
         suggestions = []
-        word_length = len(word)
         current_node = self.root
         found = ''
 
-        for idx, char in enumerate(word, start=1):
+        for char in word:
             found_node = current_node.map.get(char)
             if found_node is None:
                 search_suggestions = True
@@ -184,8 +185,7 @@ trie = Trie(Node())
 words = set()
 longest_word = 0
 
-# TODO: Use better path logic???
-with open("./text.txt") as lines:
+with open(os.path.abspath('./text/text.txt')) as lines:
 
     for line in lines:
         no_spaces = line.strip().rstrip()
@@ -193,8 +193,7 @@ with open("./text.txt") as lines:
             continue
 
         # Custom string.punctuation
-        clean_str = re.sub('[{}]'.format(
-            """!"#$%&'()*+,./:;<=>?@[\]^_`{|}~\d"""), "", no_spaces)
+        clean_str = re.sub('[{}]'.format(r"""!"#$%&'()*+,./:;<=>?@[\]^_`{|}~\d"""), "", no_spaces)
         tokens = clean_str.split(' ')
 
         for word in tokens:
