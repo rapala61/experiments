@@ -13,6 +13,28 @@ data structure. [This](https://medium.com/basecs/trying-to-understand-tries-3ec6
 
 # How To Use
 
+### Prerequisites
+
+> Use of pyenv to manage multiple Python versions is recommended
+
+- Navigate to the `tries` directory.
+- Run `pipenv install`
+
+### CLI
+
+- Run `python find.py`
+- Type the word you are searching for at the prompt, e.g. "hi":
+    ```
+    Type a word (or part of it) to see if it's contained in the text:  hi
+    ```
+- The script will attempt to locate the word and give you some info on it.
+- Type `exit` to quit.
+    ```
+    Type a word (or part of it) to see if it's contained in the text:  exit
+    Bye!
+    ```
+
+#### Example
 ```
     $ python find.py
     length longest word = 25
