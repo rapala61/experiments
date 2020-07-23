@@ -5,24 +5,18 @@ data structure. [This](https://medium.com/basecs/trying-to-understand-tries-3ec6
 
 # Disclaimer
 
-What this script is **not**:
-- A good example of the "best" implementation of the data structure.
-- Modular or reusable, in fact, there is plenty of non DRY code, I know.
-- Efficient or inefficient on purpose. No Time and Space complexity analysis has been run against this script.
+**Status**: Prototype
 
-What this script is (IMO):
-- A good first step into practicing how to implement a solution
-    using Tries as a data structure.
-- First iteration after pseudocode
-- Missing more comments
-- Fun
+- There are plenty of opportunities to DRY code.
+- No formal Time and Space complexity analysis has been run against this script.
+- It's a good first step into practicing how to implement a solution using Tries as a data structure.
 
 # How To Use
 
 ```
     $ python find.py
     length longest word = 25
-    total unique words = 8799
+    total unique words = 8,799
     Type 'exit' to quit.
 
     Partial Match:
