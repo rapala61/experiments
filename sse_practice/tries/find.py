@@ -11,7 +11,7 @@ import os
 import re
 import string
 import random
-import helpers.util
+from helpers import util
 
 from functools import reduce
 from termcolor import colored, cprint
@@ -19,8 +19,9 @@ from termcolor import colored, cprint
 class Node:
 
 
-    def __init__(self, value=None, isWord=False):
+    def __init__(self, value=None, isWord=False, prefix=''):
         self.value = value
+        self.prefix = prefix
         self.isWord = isWord
         self.map = dict()
         self.count = 0
@@ -35,33 +36,46 @@ class Node:
 class Trie:
 
 
-    def __init__(self, root):
-        self.root = root
-        self.words = []
+    def __init__(self):
+        self.root = Node()
 
+    # Gets suggestions, sorts them by occurrance
+    # and returns total suggestions
+    def get_suggestions(self, node, total=1):
+        suggestions_dict = self.sort_suggestions(
+            self.search_suggestions(node), total)
+        return list(suggestions_dict)
 
-    # TODO: I should have a way to return more that 1 suggestion.
-    def get_suggestion(self, node, parent_char=''):
-        word = parent_char
+    # Gets the top suggestions by amount of
+    # times the word appears in the text
+    def sort_suggestions(self, words=[], total=3):
+        suggestions = {}
+        count = len(words)
+        weights = list(words)
+        weights.sort(reverse=True)
+        total = total if total <= count else count
+        for i in range(total):
+            suggestions[words.get(weights[i])] = weights[i]
+        return suggestions
 
-        if node is None:
-            return ''
-
+    # search by traversing down to all word leafs from the
+    # last prefix character node matched
+    def search_suggestions(self, node):
         paths = node.map
-        paths_len = len(paths)
+        isWord = node.isWord
+        prefix = node.prefix
+        count = node.count
+        words = {}
 
-        if not paths_len:
-            if not node.isWord:
-                # print("Error. Leaf is not marked as word.")
-                return ''
+        # if the node is valid
+        if node:
+            if isWord:
+                words[count] = prefix
             else:
-                word += '|'
-        else:
-            if not node.isWord:
-                key = list(paths.keys())[0]
-                word += self.get_suggestion(paths.get(key), key)
-        return word
-
+                for char_key in paths:
+                    words.update(self.search_suggestions(
+                        paths.get(char_key)))
+        return words
 
     def search(self, word):
         nodes = []
@@ -96,9 +110,7 @@ class Trie:
                 # current_node is the node of the last matching character
                 # we are going to get suggestions based on this node's map
                 if len(current_node.map) > 0:
-                    children = self.get_suggestion(current_node)
-                    tokens = filter(lambda x: x, children.split('|'))
-                    suggestions = list(map(lambda x: found + x if x else '' , tokens))
+                    suggestions = self.get_suggestions(current_node, 3)
 
         return {"match": found, "isWord": last_node.isWord, "suggestions": suggestions, "used": last_node.count}
 
@@ -108,21 +120,25 @@ class Trie:
         word_length = len(word)
         # Start searching at root
         current_node = self.root
+        # Store prefix for each node to make
+        # it easier to traverse later
+        prefix = ''
         # For each character find if it exists in the trie
         # if not, add it as a child node
         # if it's, skip and point to it's node
         for idx, char in enumerate(word, start=1):
             char = char.lower()
+            prefix += char
             # If we can't find a match in the hash table,
             # proceed to create the node and add to hash table
             if current_node.map.get(char) is None:
                 # Is this char the end of the word?
                 if idx == word_length:
                     # Save the node with "isWord" = True
-                    current_node.map[char] = Node(char.lower(), True)
+                    current_node.map[char] = Node(char.lower(), True, prefix)
                 else:
                     # save the new node in the hash table
-                    current_node.map[char] = Node(char.lower())
+                    current_node.map[char] = Node(char.lower(), False, prefix)
                 # move node pointer to new node
                 current_node = current_node.map.get(char)
             # If found (Best case scenario)
@@ -135,7 +151,7 @@ class Trie:
                 current_node = node
 
 
-trie = Trie(Node())
+trie = Trie()
 words = set()
 longest_word = 0
 
@@ -147,7 +163,7 @@ with open(os.path.abspath('./text/text.txt')) as lines:
             continue
 
         # Custom string.punctuation
-        clean_str = re.sub('[{}]'.format(r"""!"#$%&'()*+,./:;<=>?@[\]^_`{|}~\d"""), "", no_spaces)
+        clean_str = re.sub('[{}]'.format(util.DIRTY_CHARS), "", no_spaces)
         tokens = clean_str.split(' ')
 
         for word in tokens:
@@ -157,7 +173,7 @@ with open(os.path.abspath('./text/text.txt')) as lines:
                 longest_word = word_length
             trie.add_word(word)
 
-print('length longest word = {}\ntotal unique words = {}'.format(longest_word, len(words)))
+print('length longest word = {}\ntotal unique words = {:,}'.format(longest_word, len(words)))
 
 
 i_word = ''
