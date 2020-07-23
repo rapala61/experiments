@@ -162,7 +162,6 @@ with open(os.path.abspath('./text/text.txt')) as lines:
         if len(no_spaces) < 1:
             continue
 
-        # Custom string.punctuation
         clean_str = re.sub('[{}]'.format(util.DIRTY_CHARS), "", no_spaces)
         tokens = clean_str.split(' ')
 
