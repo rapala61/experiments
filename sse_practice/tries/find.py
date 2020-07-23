@@ -187,7 +187,7 @@ while i_word != 'exit':
         print(colored('Bye!', "blue"))
         continue
 
-    result = trie.search(i_word)
+    result = trie.search(i_word.lower())
 
     if result.get('isWord'):
         print('{} is in the text! It is used {:,} times'.format(
