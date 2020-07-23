@@ -6,7 +6,7 @@
 
 # Disclaimer
 
-Every experiment will have it's own disclaimer section. It indicated the state of the experiment. I (or any other contributor) may make updates to the code at any time. We will do our best to update the docs accordingly.
+Experiments may have their own disclaimer section. It may communicate pending items, bugs, or nice to haves. I (or any other contributor) may make updates to the code at any time. We will do our best to update the docs (and any disclaimer) accordingly.
 
 # Authors
 Experiments ⚗️  is developed with ❤️ and ☕️ by [Rafael Pacas](https://github.com/rapala61).
