@@ -204,7 +204,7 @@ while i_word != 'exit':
     # str.strip = o(w) where 'w' is the length of i_word
     # See: https://stackoverflow.com/a/55114114/1522524
     # str.lower = o(w)
-    # total = o(w²)
+    # total = o(2w)
     i_word = i_word.strip().lower()
 
     # o(1)
