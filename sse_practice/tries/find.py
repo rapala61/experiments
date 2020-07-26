@@ -9,12 +9,13 @@ a partial match with suggestions.
 
 import os
 import re
-import string
 import random
-from helpers import util
+import string
 
 from functools import reduce
-from termcolor import colored, cprint
+from helpers import util
+from termcolor import colored
+from time import perf_counter
 
 class Node:
 
@@ -30,7 +31,7 @@ class Node:
             self.count += 1
 
     def increase_counter(self):
-        self.count += 1
+        self.count += 1 # O(1)
 
 
 class Trie:
@@ -78,6 +79,7 @@ class Trie:
         return words
 
     def search(self, word):
+        s_start = perf_counter()
         nodes = []
         search_suggestions = False
         suggestions = []
@@ -111,6 +113,10 @@ class Trie:
                 # we are going to get suggestions based on this node's map
                 if len(current_node.map) > 0:
                     suggestions = self.get_suggestions(current_node, 3)
+
+        s_end = perf_counter()
+        print(
+            'Took {:.2f} milliseconds to find word or suggest matches'.format((s_end-s_start)*1000))
 
         return {"match": found, "isWord": last_node.isWord, "suggestions": suggestions, "used": last_node.count}
 
@@ -151,14 +157,23 @@ class Trie:
                 current_node = node
 
 
+#  Main
+
+# o(1)
 trie = Trie()
+# o(1)
 words = set()
-longest_word = 0
-
+# o(1)
+longest_word_len = 0
+# o(1)
+longest_word = ''
+# o(1)
 with open(os.path.abspath('./text/text.txt')) as lines:
-
+    ingest_start = perf_counter()
+    # o(l) where l are lines in the text file
     for line in lines:
-        no_spaces = line.strip().rstrip()
+        # o(w)
+        no_spaces = line.strip()
         if len(no_spaces) < 1:
             continue
 
@@ -168,31 +183,53 @@ with open(os.path.abspath('./text/text.txt')) as lines:
         for word in tokens:
             word_length = len(word)
             words.add(word)
-            if longest_word < word_length:
-                longest_word = word_length
+            if longest_word_len < word_length:
+                longest_word_len = word_length
+                longest_word = word
             trie.add_word(word)
+    ingest_end = perf_counter()
+    print("Took {:.2f} milliseconds to add all the words in the text file".format((ingest_end-ingest_start)*1000))
 
-print('length longest word = {}\ntotal unique words = {:,}'.format(longest_word, len(words)))
+print('longest word = {}\nlength longest word = {}\ntotal unique words = {:,}'.format(longest_word, longest_word_len, len(words)))
 
-
+# o(1)
 i_word = ''
+# o(1)
 print('{}'.format(colored("Type 'exit' to quit.", "red")))
 
+# o(m) where m is the count of words typed while using the script
 while i_word != 'exit':
+    # o(1)
     i_word = input("\nType a word (or part of it) to see if it's contained in the text:  ")
-    i_word = i_word.strip()
+    # str.strip = o(w) where 'w' is the length of i_word
+    # See: https://stackoverflow.com/a/55114114/1522524
+    # str.lower = o(w)
+    # total = o(w²)
+    i_word = i_word.strip().lower()
 
-    if i_word.lower() == 'exit':
+    # o(1)
+    if i_word == 'exit':
+        # o(1)
         print(colored('Bye!', "blue"))
         continue
 
-    result = trie.search(i_word.lower())
+    # TBD
+    result = trie.search(i_word)
 
+    # o(1)
     if result.get('isWord'):
+        # o(1)
         print('{} is in the text! It is used {:,} times'.format(
-            colored(result.get('match'), "green", attrs=["bold"]), result.get('used')))
+            # o(1)
+            colored(
+                result.get('match'), "green", attrs=["bold"]),
+            # o(1)
+            result.get('used')))
+    # o(1)
     elif not result.get('match'):
+        # o(1)
         print('We did not find a match, sorry!')
     else:
+        # o(1)
         print('We found a partial match: {}! Did you mean {}?'.format(
             colored(result.get('match'), "red", attrs=["bold"]), colored(', '.join(result.get('suggestions')), "grey", attrs=["bold"])))

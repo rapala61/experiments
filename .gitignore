@@ -1,5 +1,8 @@
 forbidden_knowledge.txt
 
+# Secret stuff
+.env
+
 # Bytecode
 __pycache__
 
