@@ -10,7 +10,7 @@ with that character in the text. The higher the amount, the more nodes the DFS a
 
 | Function | input	| Naive ~ time (ms) | W/ optimizations ~ time (ms) |
 |---|---|---|---|
-| adding all the words in the `.txt` file | 16,217 lines| 700|
+| adding all the words in the [.txt](./text/text.txt) file | 16,217 lines| 700|
 | search | a| 0.9 |
 | search | e| 0.7 |
 | search | i| 0.8 |
