@@ -11,6 +11,7 @@ import os
 import re
 import random
 import string
+import sys
 
 from functools import reduce
 from helpers import util
@@ -85,6 +86,7 @@ class Trie:
         suggestions = []
         current_node = self.root
         found = ''
+        profile = 0.0
 
         for char in word:
             found_node = current_node.map.get(char)
@@ -115,12 +117,13 @@ class Trie:
                     suggestions = self.get_suggestions(current_node, 3)
 
         s_end = perf_counter()
-        print(
-            'Took {:.2f} milliseconds to find word or suggest matches'.format((s_end-s_start)*1000))
+        profile = s_end-s_start
 
-        return {"match": found, "isWord": last_node.isWord, "suggestions": suggestions, "used": last_node.count}
+        return {"match": found, "isWord": last_node.isWord, "suggestions": suggestions, "used": last_node.count, "profile": profile}
 
+    # o(1) + (o(w) * o(1))
     def add_word(self, word):
+        # o(1) --
         # store word length to know
         # which char node to mark "isWord"
         word_length = len(word)
@@ -129,11 +132,18 @@ class Trie:
         # Store prefix for each node to make
         # it easier to traverse later
         prefix = ''
+        # o(1) -- end
+
         # For each character find if it exists in the trie
         # if not, add it as a child node
         # if it's, skip and point to it's node
+        # o(w), word length
         for idx, char in enumerate(word, start=1):
+            # o(1), it's constant because it will always lowercase
+            # only one char
             char = char.lower()
+
+            # o(1) --
             prefix += char
             # If we can't find a match in the hash table,
             # proceed to create the node and add to hash table
@@ -143,7 +153,7 @@ class Trie:
                     # Save the node with "isWord" = True
                     current_node.map[char] = Node(char.lower(), True, prefix)
                 else:
-                    # save the new node in the hash table
+                    # save the new node in the hash table                    
                     current_node.map[char] = Node(char.lower(), False, prefix)
                 # move node pointer to new node
                 current_node = current_node.map.get(char)
@@ -155,18 +165,20 @@ class Trie:
 
                 # just point to it's node
                 current_node = node
+            # o(1) -- end
 
 
-#  Main
+#  Initialize
 
-# o(1)
+# o(1) --
 trie = Trie()
-# o(1)
 words = set()
-# o(1)
 longest_word_len = 0
-# o(1)
 longest_word = ''
+# o(1) -- end
+
+# Ingest words into Trie
+
 # o(1)
 with open(os.path.abspath('./text/text.txt')) as lines:
     ingest_start = perf_counter()
@@ -174,62 +186,91 @@ with open(os.path.abspath('./text/text.txt')) as lines:
     for line in lines:
         # o(w)
         no_spaces = line.strip()
+        # o(1)
         if len(no_spaces) < 1:
             continue
 
+        # o(ll) where "ll" is the line char length
         clean_str = re.sub('[{}]'.format(util.DIRTY_CHARS), "", no_spaces)
+        # o(ll)
         tokens = clean_str.split(' ')
-
+        # o(ln) where "ln" is the number of word tokens per line
         for word in tokens:
+            # o(1) --
             word_length = len(word)
             words.add(word)
             if longest_word_len < word_length:
                 longest_word_len = word_length
                 longest_word = word
-            trie.add_word(word)
-    ingest_end = perf_counter()
-    print("Took {:.2f} milliseconds to add all the words in the text file".format((ingest_end-ingest_start)*1000))
+            # o(1) -- end
 
+            # o(1) + (o(w) * o(1))
+            trie.add_word(word)
+    # o(1)
+    ingest_end = perf_counter()
+    # o(1)
+    print('Took {:.2f} milliseconds to add all the words in the text file'.format((ingest_end-ingest_start)*1000))
+# o(1)
 print('longest word = {}\nlength longest word = {}\ntotal unique words = {:,}'.format(longest_word, longest_word_len, len(words)))
 
-# o(1)
+
+# Start CLI menu or Profile of the script by searching N times
+
+# o(1) --
 i_word = ''
-# o(1)
-print('{}'.format(colored("Type 'exit' to quit.", "red")))
+args = sys.argv
+args_len = len(args)
+search_times = util.DEFAULT_SEARCH_TIMES
+result = {}
+# o(1) -- end
 
-# o(m) where m is the count of words typed while using the script
-while i_word != 'exit':
+if args_len > 1:
     # o(1)
-    i_word = input("\nType a word (or part of it) to see if it's contained in the text:  ")
-    # str.strip = o(w) where 'w' is the length of i_word
-    # See: https://stackoverflow.com/a/55114114/1522524
-    # str.lower = o(w)
-    # total = o(2w)
-    i_word = i_word.strip().lower()
+    profiles = []
+    # input word
+    # o(2w)
+    i_word = args[1].strip().lower()
 
-    # o(1)
-    if i_word == 'exit':
+    # o(1) --
+    if args_len == 3:
+        i_times = int(args[2])
+        search_times = i_times if i_times else search_times
+
+    print(f'searching for "{i_word}" {search_times} times\n')
+    # o(1) -- end
+
+    # o(n), the amount of times we are profiling
+    for _ in range(0, search_times):
+        # TBD
+        result = trie.search(i_word)
         # o(1)
-        print(colored('Bye!', "blue"))
-        continue
-
-    # TBD
-    result = trie.search(i_word)
-
+        profiles.append(result.get('profile'))
     # o(1)
-    if result.get('isWord'):
+    if len(profiles) > 1:
+        # o(log n) + o(1)
+        result['profile'] = profile_avg = reduce(
+            lambda x, y: x+y, profiles) / len(profiles)
+    # o(1)
+    util.show_result(result)
+
+else:
+    # o(1)
+    print('{}'.format(colored("Type 'exit' to quit.", "red")))
+    # o(m) where m is the count of words typed while using the script
+    while i_word != 'exit':
         # o(1)
-        print('{} is in the text! It is used {:,} times'.format(
+        i_word = input("\nType a word (or part of it) to see if it's contained in the text:  ")
+        # str.strip = o(w) where 'w' is the length of i_word
+        # See: https://stackoverflow.com/a/55114114/1522524
+        # str.lower = o(w)
+        # total = o(2w)
+        i_word = i_word.strip().lower()
+        # o(1)
+        if i_word == 'exit':
             # o(1)
-            colored(
-                result.get('match'), "green", attrs=["bold"]),
-            # o(1)
-            result.get('used')))
-    # o(1)
-    elif not result.get('match'):
+            print(colored('Bye!', "blue"))
+            continue
+        # TBD
+        result = trie.search(i_word)
         # o(1)
-        print('We did not find a match, sorry!')
-    else:
-        # o(1)
-        print('We found a partial match: {}! Did you mean {}?'.format(
-            colored(result.get('match'), "red", attrs=["bold"]), colored(', '.join(result.get('suggestions')), "grey", attrs=["bold"])))
+        util.show_result(result)
