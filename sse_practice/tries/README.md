@@ -3,12 +3,33 @@
 This is an experimental script meant to practice the use of the Trie
 data structure. [This](https://medium.com/basecs/trying-to-understand-tries-3ec6bede0014) post is a good read about it.
 
+# Performance Profile
+
+The search time for the characters below was profiled by taking the average of running each search **10,000 times**. The discrepancy in times (e.g. the "c" char) are due to the amount of words that start
+with that character in the text. The higher the amount, the more nodes the DFS algorithm has to visit starting from the "a".
+
+| Function | input	| Naive ~ time (ms) | W/ optimizations ~ time (ms) |
+|---|---|---|---|
+| adding all the words in the `.txt` file | 16,217 lines| 700|
+| search | a| 0.9 |
+| search | e| 0.7 |
+| search | i| 0.8 |
+| search | o| 0.25 |
+| search | u| 0.3 |
+| search | b| 0.4 |
+| search | c| 1.3 |
+| search | d| 0.8 |
+| search | f| 0.55 |
+| search | g| 0.3 |
+| search | h| 0.5 |
+| search | j| 0.1 |
+
 # Disclaimer
 
 **Status**: Prototype
 
 - There are plenty of opportunities to DRY code.
-- No formal Time and Space complexity analysis has been run against this script.
+- Some Time and Space complexity analysis has been done, but no substantive optimizations have been applied.
 - It's a good first step into practicing how to implement a solution using Tries as a data structure.
 
 # How To Use
