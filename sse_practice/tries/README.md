@@ -23,6 +23,20 @@ with that character in the text. The higher the amount, the more nodes the DFS a
 | search | g| 0.3 |
 | search | h| 0.5 |
 | search | j| 0.1 |
+| search | k| 0.1 |
+| search | l| 0.3 |
+| search | m| 0.6 |
+| search | n| 0.2 |
+| search | p| 1 |
+| search | q| 0.05 |
+| search | r| 0.6 |
+| search | s| 1 |
+| search | t| 0.4 |
+| search | v| 0.2 |
+| search | w| 0.2 |
+| search | x| 0 |
+| search | y| 0 |
+| search | z| 0 |
 
 # Disclaimer
 

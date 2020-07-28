@@ -1,10 +1,5 @@
 from termcolor import colored
 
-
-
-
-
-
 # Custom string.punctuation
 DIRTY_CHARS = r"""!"#$%&()*+,./:;<=>?@[\]^_`{|}~\d"""
 DEFAULT_SEARCH_TIMES = 1000

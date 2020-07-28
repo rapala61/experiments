@@ -22,6 +22,7 @@ class Node:
 
 
     def __init__(self, value=None, isWord=False, prefix=''):
+        # o(1) --
         self.value = value
         self.prefix = prefix
         self.isWord = isWord
@@ -30,9 +31,11 @@ class Node:
 
         if isWord:
             self.count += 1
+        # o(1) -- end
 
+    # o(1)
     def increase_counter(self):
-        self.count += 1 # O(1)
+        self.count += 1
 
 
 class Trie:
@@ -44,8 +47,11 @@ class Trie:
     # Gets suggestions, sorts them by occurrance
     # and returns total suggestions
     def get_suggestions(self, node, total=1):
+        # TBD
         suggestions_dict = self.sort_suggestions(
+            # TBD
             self.search_suggestions(node), total)
+        # o(1)
         return list(suggestions_dict)
 
     # Gets the top suggestions by amount of
@@ -63,23 +69,28 @@ class Trie:
     # search by traversing down to all word leafs from the
     # last prefix character node matched
     def search_suggestions(self, node):
+        # o(1) --
         paths = node.map
         isWord = node.isWord
         prefix = node.prefix
         count = node.count
         words = {}
+        # o(1) -- end
 
         # if the node is valid
         if node:
             if isWord:
                 words[count] = prefix
             else:
+                #
                 for char_key in paths:
                     words.update(self.search_suggestions(
                         paths.get(char_key)))
         return words
 
+
     def search(self, word):
+        # o(1) --
         s_start = perf_counter()
         nodes = []
         search_suggestions = False
@@ -87,39 +98,63 @@ class Trie:
         current_node = self.root
         found = ''
         profile = 0.0
+        # o(1) -- end
 
-        for char in word:
-            found_node = current_node.map.get(char)
-            if found_node is None:
+        # o(w)
+        for _chr in word:
+            # o(1) --
+            mapped_node = current_node.map.get(_chr)
+            if mapped_node is None:
                 search_suggestions = True
                 break
             else:
-                current_node = found_node
+                current_node = mapped_node
                 nodes.append(current_node)
+            # o(1) -- end
 
+        # o(1)
         if not len(nodes):
-            return {"match": found, "suggestions": []}
+            # o(1) --
+            s_end = perf_counter()
+            profile = s_end-s_start
+
+            return {
+                "match": found,
+                "isWord": False,
+                "suggestions": suggestions,
+                "profile": profile}
+            # o(1) -- end
+
+
         else:
+            # o(1) --
             last_node = nodes[-1]
 
             if not last_node.isWord:
                 search_suggestions = True
+            # o(1) -- end
 
+            # o(p log p) where p is the length of the matched prefix
             found = reduce(lambda x, y: x + y, map(lambda x: x.value, nodes))
 
             # I think this has something to do to the predecessor problem,
             # van Emde Boas trees and all that fun stuff. For now, let's do it
             # the naive way
+            # o(1)
             if search_suggestions:
                 # current_node is the node of the last matching character
                 # we are going to get suggestions based on this node's map
+                # o(1)
                 if len(current_node.map) > 0:
+                    # TBD
                     suggestions = self.get_suggestions(current_node, 3)
 
+        # o(1) --
         s_end = perf_counter()
         profile = s_end-s_start
 
         return {"match": found, "isWord": last_node.isWord, "suggestions": suggestions, "used": last_node.count, "profile": profile}
+        # o(1) -- end
 
     # o(1) + (o(w) * o(1))
     def add_word(self, word):
@@ -138,28 +173,28 @@ class Trie:
         # if not, add it as a child node
         # if it's, skip and point to it's node
         # o(w), word length
-        for idx, char in enumerate(word, start=1):
+        for idx, _chr in enumerate(word, start=1):
             # o(1), it's constant because it will always lowercase
             # only one char
-            char = char.lower()
+            _chr = _chr.lower()
 
             # o(1) --
-            prefix += char
+            prefix += _chr
             # If we can't find a match in the hash table,
             # proceed to create the node and add to hash table
-            if current_node.map.get(char) is None:
+            if current_node.map.get(_chr) is None:
                 # Is this char the end of the word?
                 if idx == word_length:
                     # Save the node with "isWord" = True
-                    current_node.map[char] = Node(char.lower(), True, prefix)
+                    current_node.map[_chr] = Node(_chr.lower(), True, prefix)
                 else:
-                    # save the new node in the hash table                    
-                    current_node.map[char] = Node(char.lower(), False, prefix)
+                    # save the new node in the hash table
+                    current_node.map[_chr] = Node(_chr.lower(), False, prefix)
                 # move node pointer to new node
-                current_node = current_node.map.get(char)
+                current_node = current_node.map.get(_chr)
             # If found (Best case scenario)
             else:
-                node = current_node.map.get(char)
+                node = current_node.map.get(_chr)
                 if node.isWord:
                     node.increase_counter()
 
@@ -182,20 +217,20 @@ longest_word = ''
 # o(1)
 with open(os.path.abspath('./text/text.txt')) as lines:
     ingest_start = perf_counter()
-    # o(l) where l are lines in the text file
+    # o(ls) where ls are lines in the text file
     for line in lines:
-        # o(w)
-        no_spaces = line.strip()
+        # o(l) where "l" is the line length
+        _line = line.strip()
         # o(1)
-        if len(no_spaces) < 1:
+        if len(_line) < 1:
             continue
 
-        # o(ll) where "ll" is the line char length
-        clean_str = re.sub('[{}]'.format(util.DIRTY_CHARS), "", no_spaces)
-        # o(ll)
-        tokens = clean_str.split(' ')
-        # o(ln) where "ln" is the number of word tokens per line
-        for word in tokens:
+        # o(l)
+        clean_line = re.sub('[{}]'.format(util.DIRTY_CHARS), "", _line)
+        # o(l)
+        word_tokens = clean_line.split(' ')
+        # o(ws) where "ws" is the number of word tokens per line
+        for word in word_tokens:
             # o(1) --
             word_length = len(word)
             words.add(word)
@@ -247,7 +282,7 @@ if args_len > 1:
         profiles.append(result.get('profile'))
     # o(1)
     if len(profiles) > 1:
-        # o(log n) + o(1)
+        # o(log n) + o(1) where n is the amount of times we searched for a match
         result['profile'] = profile_avg = reduce(
             lambda x, y: x+y, profiles) / len(profiles)
     # o(1)
