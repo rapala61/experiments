@@ -49,7 +49,7 @@ class Trie:
     def get_suggestions(self, node, total=1):
         # TBD
         suggestions_dict = self.sort_suggestions(
-            # TBD
+            # o(c²)
             self.search_suggestions(node), total)
         # o(1)
         return list(suggestions_dict)
@@ -67,7 +67,8 @@ class Trie:
         return suggestions
 
     # search by traversing down to all word leafs from the
-    # last prefix character node matched
+    # last matched prefix character node
+    # o(1) + o(c)*o(c-1) = o(1) + o(c²-c) = o(c²)
     def search_suggestions(self, node):
         # o(1) --
         paths = node.map
@@ -79,13 +80,18 @@ class Trie:
 
         # if the node is valid
         if node:
+            # o(1)
             if isWord:
                 words[count] = prefix
             else:
-                #
+                # o(c) where "c" is the number of child nodes
                 for char_key in paths:
-                    words.update(self.search_suggestions(
-                        paths.get(char_key)))
+                    # o(1)
+                    words.update(
+                        # o(c-1)
+                        self.search_suggestions(
+                            paths.get(char_key)))
+        # o(1)
         return words
 
 
