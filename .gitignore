@@ -12,3 +12,6 @@ __pycache__
 # vscode stuff
 .vscode
 launch.json
+
+# created by pyrgg (graph generator)
+logfile.log
